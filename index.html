@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Presentación - Visor CIM</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    /* Pantalla inicial */
+    #pantalla-inicio {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: url('https://atlasmetropolitano.github.io/cim/img/fondo.jpg') center/cover no-repeat;
+      color: white;
+      text-align: center;
+      transition: opacity 1s ease;
+    }
+
+    #pantalla-inicio img {
+      max-width: 200px;
+      margin-bottom: 1rem;
+    }
+
+    #pantalla-inicio h1 {
+      font-size: 3rem;
+      text-shadow: 2px 2px 4px black;
+    }
+
+    #pantalla-inicio button {
+      margin-top: 1rem;
+      padding: 14px 32px;
+      font-size: 1.2rem;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #003366;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    #pantalla-inicio button:hover {
+      background-color: #e6e6e6;
+    }
+
+    /* Cortinas (telones) */
+    .cortina {
+      position: fixed;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background-color: #003366;
+      z-index: 9;
+      transition: all 1s ease-in-out;
+    }
+
+    #cortina-izquierda {
+      left: 0;
+    }
+
+    #cortina-derecha {
+      right: 0;
+    }
+
+    .cortina.ocultar-izquierda {
+      transform: translateX(-100%);
+    }
+
+    .cortina.ocultar-derecha {
+      transform: translateX(100%);
+    }
+
+    iframe#visor {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      z-index: 1;
+      position: relative;
+    }
+
+    #btn-volver {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 15;
+      background-color: #ffffffcc;
+      color: #003366;
+      border: none;
+      padding: 10px 16px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+    }
+
+    #btn-volver:hover {
+      background-color: #eeeeee;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla de inicio -->
+  <div id="pantalla-inicio">
+    <img src="img/Logo.png" alt="Logo CIM">
+    <h1>Bienvenido al Visor CIM</h1>
+    <p>Explorá el territorio con una nueva mirada.</p>
+    <button onclick="abrirTelon()">Abrir Visor</button>
+  </div>
+
+  <!-- Cortinas -->
+  <div id="cortina-izquierda" class="cortina"></div>
+  <div id="cortina-derecha" class="cortina"></div>
+
+  <!-- Botón para volver -->
+  <button id="btn-volver" onclick="volverInicio()">✖ Volver</button>
+
+  <!-- Visor en iframe -->
+  <iframe id="visor" src="https://atlasmetropolitano.github.io/cim/"></iframe>
+
+  <script>
+    function abrirTelon() {
+      // Ocultar pantalla inicial
+      document.getElementById("pantalla-inicio").style.opacity = "0";
+
+      // Mover las cortinas
+      document.getElementById("cortina-izquierda").classList.add("ocultar-izquierda");
+      document.getElementById("cortina-derecha").classList.add("ocultar-derecha");
+
+      // Mostrar el visor luego del efecto
+      setTimeout(() => {
+        document.getElementById("pantalla-inicio").style.display = "none";
+        document.getElementById("visor").style.display = "block";
+        document.getElementById("btn-volver").style.display = "block";
+      }, 1000);
+    }
+
+    function volverInicio() {
+      // Ocultar visor
+      document.getElementById("visor").style.display = "none";
+      document.getElementById("btn-volver").style.display = "none";
+
+      // Mostrar pantalla de inicio
+      document.getElementById("pantalla-inicio").style.display = "flex";
+      setTimeout(() => {
+        document.getElementById("pantalla-inicio").style.opacity = "1";
+      }, 50);
+
+      // Volver a cerrar cortinas
+      document.getElementById("cortina-izquierda").classList.remove("ocultar-izquierda");
+      document.getElementById("cortina-derecha").classList.remove("ocultar-derecha");
+    }
+  </script>
+
+</body>
+</html>
