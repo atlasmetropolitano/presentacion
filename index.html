@@ -12,7 +12,7 @@
       overflow: hidden;
     }
 
-    /* Pantalla inicial */
+    /* Pantalla inicial / final */
     #pantalla-inicio {
       position: absolute;
       top: 0;
@@ -28,6 +28,7 @@
       color: white;
       text-align: center;
       transition: opacity 1s ease;
+      opacity: 1;
     }
 
     #pantalla-inicio img {
@@ -38,6 +39,16 @@
     #pantalla-inicio h1 {
       font-size: 3rem;
       text-shadow: 2px 2px 4px black;
+      margin: 0;
+      opacity: 1;
+      transition: opacity 1.5s ease;
+    }
+
+    #pantalla-inicio p {
+      font-size: 1.2rem;
+      text-shadow: 1px 1px 2px black;
+      opacity: 1;
+      transition: opacity 1.5s ease;
     }
 
     #pantalla-inicio button {
@@ -68,21 +79,14 @@
       transition: all 1s ease-in-out;
     }
 
-    #cortina-izquierda {
-      left: 0;
-    }
+    #cortina-izquierda { left: 0; }
+    #cortina-derecha { right: 0; }
 
-    #cortina-derecha {
-      right: 0;
-    }
+    .cortina.ocultar-izquierda { transform: translateX(-100%); }
+    .cortina.ocultar-derecha { transform: translateX(100%); }
 
-    .cortina.ocultar-izquierda {
-      transform: translateX(-100%);
-    }
-
-    .cortina.ocultar-derecha {
-      transform: translateX(100%);
-    }
+    .cortina.cerrar-izquierda { transform: translateX(0); }
+    .cortina.cerrar-derecha { transform: translateX(0); }
 
     iframe#visor {
       display: none;
@@ -112,16 +116,27 @@
     #btn-volver:hover {
       background-color: #eeeeee;
     }
+
+    /* Efecto fade-in del mensaje final */
+    .fade-in {
+      opacity: 0;
+      animation: aparecer 2s forwards;
+    }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
   <!-- Pantalla de inicio -->
   <div id="pantalla-inicio">
-    <img src="img/Logo.png" alt="Logo CIM">
-    <h1>Bienvenido al Visor del Atlas Metropolitano</h1>
-    <p>Explorá el territorio con una nueva mirada.</p>
-    <button onclick="abrirTelon()">Abrir Visor</button>
+    <img src="img/Logo.png" alt="Logo CIM" id="logo">
+    <h1 id="titulo">Bienvenido al Visor del Atlas Metropolitano</h1>
+    <p id="subtitulo">Explorá el territorio con una nueva mirada.</p>
+    <button id="btn-abrir" onclick="abrirTelon()">Abrir Visor</button>
   </div>
 
   <!-- Cortinas -->
@@ -131,43 +146,91 @@
   <!-- Botón para volver -->
   <button id="btn-volver" onclick="volverInicio()">✖ Volver</button>
 
-  <!-- Visor en iframe -->
+  <!-- Visor -->
   <iframe id="visor" src="https://atlasmetropolitano.github.io/cim/"></iframe>
 
+  <!-- Audio final -->
+  <audio id="audioFinal" src="audio/aplausos.mp3" preload="auto"></audio>
+  <!-- ⚠️ Poné tu archivo en una carpeta llamada “audio” y nombralo “aplausos.mp3”.
+       Puede ser cualquier sonido de cierre, música o efecto suave. -->
+
   <script>
+    let yaEntro = false;
+
     function abrirTelon() {
-      // Ocultar pantalla inicial
       document.getElementById("pantalla-inicio").style.opacity = "0";
 
-      // Mover las cortinas
+      // Abrir el telón (se separan)
       document.getElementById("cortina-izquierda").classList.add("ocultar-izquierda");
       document.getElementById("cortina-derecha").classList.add("ocultar-derecha");
 
-      // Mostrar el visor luego del efecto
       setTimeout(() => {
         document.getElementById("pantalla-inicio").style.display = "none";
         document.getElementById("visor").style.display = "block";
         document.getElementById("btn-volver").style.display = "block";
+        yaEntro = true;
       }, 1000);
     }
 
     function volverInicio() {
-      // Ocultar visor
+      // Cerrar el telón teatral
+      document.getElementById("cortina-izquierda").classList.remove("ocultar-izquierda");
+      document.getElementById("cortina-derecha").classList.remove("ocultar-derecha");
+      document.getElementById("cortina-izquierda").classList.add("cerrar-izquierda");
+      document.getElementById("cortina-derecha").classList.add("cerrar-derecha");
+
+      // Ocultar visor y botón
       document.getElementById("visor").style.display = "none";
       document.getElementById("btn-volver").style.display = "none";
 
-      // Mostrar pantalla de inicio
-      document.getElementById("pantalla-inicio").style.display = "flex";
+      // Esperar al cierre para mostrar el mensaje final
       setTimeout(() => {
+        document.getElementById("pantalla-inicio").style.display = "flex";
         document.getElementById("pantalla-inicio").style.opacity = "1";
-      }, 50);
 
-      // Volver a cerrar cortinas
-      document.getElementById("cortina-izquierda").classList.remove("ocultar-izquierda");
-      document.getElementById("cortina-derecha").classList.remove("ocultar-derecha");
+        if (yaEntro) {
+          const titulo = document.getElementById("titulo");
+          const subtitulo = document.getElementById("subtitulo");
+          const boton = document.getElementById("btn-abrir");
+          const audio = document.getElementById("audioFinal");
+
+          // Cambiar textos
+          titulo.textContent = "👏👏👏 Gracias por escuchar y venir !!!👏👏👏";
+          subtitulo.textContent = "Esperamos verte en las próximas Jornadas nuevamente.";
+          boton.style.display = "none";
+
+          // Aplicar fade-in visual
+          titulo.classList.add("fade-in");
+          subtitulo.classList.add("fade-in");
+
+          // Reproducir audio con volumen inicial bajo
+          audio.volume = 0;
+          audio.play();
+
+          // Hacer un pequeño fade-in del sonido
+          let vol = 0;
+          const fade = setInterval(() => {
+            if (vol < 1) {
+              vol += 0.05;
+              audio.volume = vol;
+            } else {
+              clearInterval(fade);
+            }
+          }, 100);
+        }
+
+        // Reabrir el telón suavemente
+        setTimeout(() => {
+          document.getElementById("cortina-izquierda").classList.remove("cerrar-izquierda");
+          document.getElementById("cortina-derecha").classList.remove("cerrar-derecha");
+        }, 400);
+      }, 1000);
     }
   </script>
 
 </body>
 </html>
+
+
+
 
