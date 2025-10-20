@@ -127,6 +127,38 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* 🔹 Botón flotante para ir a la página principal */
+    #btn-ir-principal {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 30;
+      background-color: #003366;
+      color: white;
+      border: none;
+      padding: 14px 26px;
+      font-size: 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(30px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    #btn-ir-principal:hover {
+      background-color: #0055aa;
+      transform: translateY(30px) scale(1.05);
+    }
+
+    /* Estado visible (fade-in flotante) */
+    #btn-ir-principal.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
   </style>
 </head>
 <body>
@@ -146,21 +178,20 @@
   <!-- Botón para volver -->
   <button id="btn-volver" onclick="volverInicio()">✖ Volver</button>
 
-  <!-- Visor -->
-  <iframe id="visor" src=" https://analisisambiental.users.earthengine.app/view/analisis-ambiental"></iframe>
+  <!-- 🔹 Botón flotante a la página principal -->
+  <button id="btn-ir-principal" onclick="irAPrincipal()">🏠 Página Principal</button>
 
-  <!-- Audio final -->
-  <!--<audio id="audioFinal" src="audio/aplausos.mp3" preload="auto"></audio>
-   ⚠️ Poné tu archivo en una carpeta llamada “audio” y nombralo “aplausos.mp3”.
-       Puede ser cualquier sonido de cierre, música o efecto suave. -->
+  <!-- Visor -->
+  <iframe id="visor" src="https://analisisambiental.users.earthengine.app/view/analisis-ambiental"></iframe>
+
+  <!-- Audio final
+  <audio id="audioFinal" src="audio/aplausos.mp3" preload="auto"></audio> -->
 
   <script>
     let yaEntro = false;
 
     function abrirTelon() {
       document.getElementById("pantalla-inicio").style.opacity = "0";
-
-      // Abrir el telón (se separan)
       document.getElementById("cortina-izquierda").classList.add("ocultar-izquierda");
       document.getElementById("cortina-derecha").classList.add("ocultar-derecha");
 
@@ -173,41 +204,41 @@
     }
 
     function volverInicio() {
-      // Cerrar el telón teatral
       document.getElementById("cortina-izquierda").classList.remove("ocultar-izquierda");
       document.getElementById("cortina-derecha").classList.remove("ocultar-derecha");
       document.getElementById("cortina-izquierda").classList.add("cerrar-izquierda");
       document.getElementById("cortina-derecha").classList.add("cerrar-derecha");
 
-      // Ocultar visor y botón
       document.getElementById("visor").style.display = "none";
       document.getElementById("btn-volver").style.display = "none";
 
-      // Esperar al cierre para mostrar el mensaje final
       setTimeout(() => {
-        document.getElementById("pantalla-inicio").style.display = "flex";
-        document.getElementById("pantalla-inicio").style.opacity = "1";
+        const inicio = document.getElementById("pantalla-inicio");
+        inicio.style.display = "flex";
+        inicio.style.opacity = "1";
 
         if (yaEntro) {
           const titulo = document.getElementById("titulo");
           const subtitulo = document.getElementById("subtitulo");
           const boton = document.getElementById("btn-abrir");
           const audio = document.getElementById("audioFinal");
+          const botonPrincipal = document.getElementById("btn-ir-principal");
 
-          // Cambiar textos
-          titulo.textContent = "Gracias !!!";
-          
+          titulo.textContent = "¡Gracias por visitar el Atlas Metropolitano!";
+          subtitulo.textContent = "Podés volver a la página principal cuando quieras.";
           boton.style.display = "none";
 
-          // Aplicar fade-in visual
           titulo.classList.add("fade-in");
           subtitulo.classList.add("fade-in");
 
-          // Reproducir audio con volumen inicial bajo
+          // ✨ Mostrar el botón flotante con retardo
+          setTimeout(() => {
+            botonPrincipal.classList.add("visible");
+          }, 2500);
+
+          // Audio con fade-in
           audio.volume = 0;
           audio.play();
-
-          // Hacer un pequeño fade-in del sonido
           let vol = 0;
           const fade = setInterval(() => {
             if (vol < 1) {
@@ -219,17 +250,29 @@
           }, 100);
         }
 
-        // Reabrir el telón suavemente
         setTimeout(() => {
           document.getElementById("cortina-izquierda").classList.remove("cerrar-izquierda");
           document.getElementById("cortina-derecha").classList.remove("cerrar-derecha");
         }, 400);
       }, 1000);
     }
+
+    // 🔹 Redirigir a la página principal
+    function irAPrincipal() {
+      window.location.href = "index.html"; // Cambiá si tu página principal está en otra ruta
+    }
   </script>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
 
